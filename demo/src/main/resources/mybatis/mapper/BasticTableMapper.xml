@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.BasticTableMapper">
+    <resultMap id="ResultMapWithBLOBs" type="com.example.demo.pojo.LapMemberPOJO">
+        <result column="UUID" property="uuid" />
+        <result column="MEMBERID" property="memberid" />
+        <result column="NAME" property="name" />
+        <result column="AGE" property="age" />
+        <result column="SEX" property="sex" />
+        <result column="BIRTHDATE" property="birthdate" />
+        <result column="ADDRESS" property="address" />
+        <result column="IMG" property="img" typeHandler="com.example.demo.handler.BlobTypeHandler"  />
+        <result column="MARRIAGE" property="marriage" />
+        <result column="ENABLE" property="enable" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+       UUID,MEMBERID,NAME,AGE,SEX,BIRTHDATE,ADDRESS,IMG,MARRIAGE,ENABLE
+    </sql>
+
+    <select id="loadMember" resultType="com.example.demo.pojo.LapMemberPOJO"  resultMap="ResultMapWithBLOBs">
+        select  <include refid="Base_Column_List"></include>  from LAP_MEMBERINFO where enable ='1'
+        <if test="name!='' and name != null">
+            <![CDATA[and name like '%'|| #{name} || '%' ]]>
+        </if>
+        <if test="address !='' and address != null">
+            <![CDATA[and address like '%'|| #{address} || '%' ]]>
+        </if>
+    </select>
+
+    <insert id="addMemberInfo">
+        insert into LAP_MEMBERINFO (uuid,
+                                 memberid,
+                                 name,
+                                 age,
+                                 sex,
+                                 birthdate,
+                                 address,
+                                 img,
+                                 marriage,
+                                 enable
+                                 )
+        values (#{uuid},
+                #{memberid},
+                <if test="name != null">#{name}</if><if test="name == null">NULL</if>,
+                <if test="age != null">#{age}</if><if test="age == null">NULL</if>,
+                <if test="sex != null">#{sex}</if><if test="sex == null">NULL</if>,
+                <if test="birthdate != null">#{birthdate}</if><if test="birthdate == null">NULL</if>,
+                <if test="address != null">#{address}</if><if test="address == null">NULL</if>,
+                <if test="img != null">#{img,typeHandler=com.example.demo.handler.BlobTypeHandler}</if><if test="img == null">NULL</if>,
+                <if test="marriage != null">#{marriage}</if><if test="marriage == null">NULL</if>,
+                #{enable}
+                )
+    </insert>
+    <update id="updateMemberInfo">
+        update lap_memberinfo
+        <set>
+            <if test="name != null and name !='' ">
+                name=#{name},
+            </if>
+            <if test="age != null and age !='' ">
+                age=#{age},
+            </if>
+            <if test="sex != null and sex !='' ">
+                sex=#{sex},
+            </if>
+            <if test="address != null and address !='' ">
+                address=#{address},
+            </if>
+            <if test="birthdate != null and birthdate !='' ">
+                birthdate=#{birthdate},
+            </if>
+            <if test="img != null and img !='' ">
+                img=#{img,typeHandler=com.example.demo.handler.BlobTypeHandler},
+            </if>
+            <if test="marriage != null and marriage !='' ">
+                marriage=#{marriage},
+            </if>
+        </set>
+        where uuid =#{uuid}
+    </update>
+
+
+
+    <delete id="deleteMemberInfo">
+        delete  from lap_memberinfo where uuid = #{uuid}
+    </delete>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.MemberMapper">
+    <resultMap id="ResultMapWithBLOBs" type="com.example.demo.pojo.LapUserInfoPOJO">
+        <result column="USER_ID" property="userId" />
+        <result column="USER_NAME" property="userName" />
+        <result column="USER_PWD" property="userPwd" />
+        <result column="USER_DESCINFO" property="userDescinfo" />
+        <result column="USER_IMG" property="userImg" typeHandler="com.example.demo.handler.BlobTypeHandler"  />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+       USER_ID,USER_NAME,USER_PWD,USER_DESCINFO,USER_IMG
+    </sql>
+
+
+    <select id="queryLogin" parameterType="com.example.demo.pojo.LapUserInfoPOJO" resultMap="ResultMapWithBLOBs">
+            select <include refid="Base_Column_List"></include>  from LAP_USER_INFO
+        <where>
+            <if test="userId != null and userId !='' ">
+                and USER_ID=#{userId}
+            </if>
+            <if test="userName != null and userName !='' ">
+                and  USER_NAME=#{userName}
+            </if>
+            <if test="userPwd != null and userPwd !='' ">
+                and  USER_PWD=#{userPwd}
+            </if>
+            <if test="userDescinfo != null and userDescinfo !='' ">
+                and  USER_DESCINFO=#{userDescinfo}
+            </if>
+            <if test="userImg != null and userImg !='' ">
+                and  USER_IMG=#{userImg,jdbcType=BLOB}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateUserinfo">
+        update LAP_USER_INFO
+        <set>
+            <if test="userName != null and userName !='' ">
+                USER_NAME=#{userName},
+            </if>
+            <if test="userPwd != null and userPwd !='' ">
+                USER_PWD=#{userPwd},
+            </if>
+            <if test="userDescinfo != null and userDescinfo !='' ">
+                USER_DESCINFO=#{userDescinfo},
+            </if>
+            <if test="userImg != null and userImg !='' ">
+                USER_IMG=#{userImg, typeHandler=com.example.demo.handler.BlobTypeHandler}
+            </if>
+        </set>
+        where USER_ID =#{userId}
+    </update>
+
+</mapper>
